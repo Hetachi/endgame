@@ -12,8 +12,8 @@ app.service('StatusService', function(){
 
       _userStatuses.splice(0);
       angular.copy(_statuses, _userStatuses);
-
-    }else {
+    }
+    else {
       alert("Please define user and message");
     }
   }
@@ -31,8 +31,10 @@ app.service('StatusService', function(){
 app.controller('UserController', function(StatusService) {
   var vm = this;
 
+    vm.date = new Date();
   vm.setStatus = function (){
     var _newStatus = {
+      date : vm.date,
       user: vm.user,
       message: vm.message
     };
@@ -49,5 +51,6 @@ app.controller('StatusController', function(StatusService){
 
   vm.deleteStatus = function() {
     vm.statuses.splice(0);
+
   }
 });

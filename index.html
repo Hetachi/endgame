@@ -1,23 +1,35 @@
+<!DOCTYPE html>
 <html ng-app="firstApp">
 <head>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" media="screen" title="no title" charset="utf-8">
 </head>
-<body >
-  <form name="statusForm"ng-submit="userCtrl.setStatus()" ng-controller="UserController as userCtrl">
-    <input type="text" ng-model="userCtrl.user" placeholder="Name"></input>
-    <input type="text" required ng-model="userCtrl.message" placeholder="Message"></input>
-    <button type="submit">Update status</button>
-  </form>
-  <hr/>
-  <div class="" ng-controller="StatusController as statusCtrl">
-    <div ng-repeat="x in statusCtrl.statuses">
-        {{x.user}}:</br>
-        <input type="text" value="{{x.message}}"></input>
+<body>
+  <div class="container">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="#">MyPAge</a>
       </div>
-    <button type="button" ng-click="statusCtrl.deleteStatus()" name="Delete all">Delete all</button>
-  </div>
-    <script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
-    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="app.js"></script>
+    </nav>
+      <div class="form-group">
+        <form name="statusForm"ng-submit="userCtrl.setStatus()" ng-controller="UserController as userCtrl">
+          <input class="form-control" type="text" ng-model="userCtrl.user" placeholder="Your name"></input>
+          <input class="form-control" type="text" ng-model="userCtrl.message" placeholder="E.g. Hello World"></input>
+          <button class="btn btn-default" type="submit">Update status</button>
+        </form>
+      </div>
+      <hr/>
+      <div class="" ng-controller="StatusController as statusCtrl">
+        <div ng-repeat="x in statusCtrl.statuses">
+            <h2>{{x.user}}:</h2>
+            <span>{{x.date | date:format:timezone}}</span>
+            <textarea class="form-control" type="text">{{x.message}}</textarea>
+          </div>
+        <button class="btn btn-default" type="button" ng-click="statusCtrl.deleteStatus()" name="Delete all">Delete all</button>
+      </div>
+        <script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
+        <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+    </div>
   </div>
 </body>
 </html>
