@@ -21,7 +21,7 @@
       <div class="" ng-controller="StatusController as statusCtrl">
         <div ng-repeat="x in statusCtrl.statuses">
             <h2>{{x.user}}:</h2>
-            <span>{{x.date | date:format:timezone}}</span>
+            <span>{{x.date | date:'medium'}}</span>
             <textarea class="form-control" type="text">{{x.message}}</textarea>
           </div>
         <button class="btn btn-default" type="button" ng-click="statusCtrl.deleteStatus()" name="Delete all">Delete all</button>

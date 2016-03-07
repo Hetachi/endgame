@@ -6,6 +6,7 @@ app.service('StatusService', function(){
   service.statuses = [];
   var _statuses = [];
   var _userStatuses = [];
+
   service.addStatus = function(newStatus) {
     if (!_.isEmpty(newStatus.user) && !_.isEmpty(newStatus.message)) {
       _statuses.push(newStatus);
@@ -17,31 +18,40 @@ app.service('StatusService', function(){
       alert("Please define user and message");
     }
   }
+
   service.resetStatuses = function(){
     _statuses.splice(0);
   }
+
   service.getStatuses = function () {
     return _statuses;
   }
+
   service.addStatuses = function(newStatus){
     _statuses.push(newStatus);
-  };
+  }
 });
-
+  service.dbSave = function(infoToSave) {
+    var db = this;
+    
+  }
 app.controller('UserController', function(StatusService) {
   var vm = this;
+  vm.date = new Date();
 
-    vm.date = new Date();
   vm.setStatus = function (){
     var _newStatus = {
       date : vm.date,
       user: vm.user,
       message: vm.message
     };
-    console.log('Sending user status');
-    console.log(JSON.stringify(_newStatus));
-    StatusService.addStatus(_newStatus);
 
+    StatusService.addStatus(_newStatus);
+    function _resetForm() {
+      vm.date = '';
+      vm.message = '';
+    }
+    _resetForm();
   };
 });
 
