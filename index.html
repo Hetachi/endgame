@@ -2,12 +2,20 @@
 <head>
 </head>
 <body >
-  <form name="statusForm" ng-submit="userCtrl.setStatus()" ng-controller="UserController as userCtrl">
-    <input type="text" ng-model="userCtrl.user" placeholder="Bitch"></input>
-    <input type="text" ng-model="userCtrl.message" placeholder="Sup niga"></input>
+  <form name="statusForm"ng-submit="userCtrl.setStatus()" ng-controller="UserController as userCtrl">
+    <input type="text" ng-model="userCtrl.user" placeholder="Name"></input>
+    <input type="text" required ng-model="userCtrl.message" placeholder="Message"></input>
     <button type="submit">Update status</button>
   </form>
-
+  <hr/>
+  <div class="" ng-controller="StatusController as statusCtrl">
+    <div ng-repeat="x in statusCtrl.statuses">
+        {{x.user}}:</br>
+        <input type="text" value="{{x.message}}"></input>
+      </div>
+    <button type="button" ng-click="statusCtrl.deleteStatus()" name="Delete all">Delete all</button>
+  </div>
+    <script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="app.js"></script>
   </div>
