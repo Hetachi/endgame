@@ -2,11 +2,13 @@
 <head>
 </head>
 <body >
-  <form name="statusForm" ng-submit="userCtrl.setStatus()" ng-controller="UserController as userCtrl">
+<div class="" ng-cntroller-"UserController as userCtrl">
+  <ng-form="statusForm" ng-submit="userCtrl.setStatus()">
     <input type="text" ng-model="userCtrl.user" placeholder="Bitch"></input>
     <input type="text" ng-model="userCtrl.message" placeholder="Sup niga"></input>
     <button type="submit">Update status</button>
-  </form>
+  </ng-form>
+</div>
 
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="app.js"></script>
