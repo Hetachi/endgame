@@ -49,33 +49,82 @@ app.controller('LoginController', function(UserService){
     UserService.setUser(vm.username);
   }
 })
-app.service('StatusService', function(){
+app.service('StatusService', function($http){
   var service = this;
-  service.statuses = [];
+  var SERVER_URL = 'http://10.0.1.86:8080/statuses';
   var _statuses = [];
   var _userStatuses = [];
+  var _users = [];
 
-  service.addStatus = function(newStatus) {
-    if (!_.isEmpty(newStatus.user) && !_.isEmpty(newStatus.message)) {
-      _statuses.push(newStatus);
-      _userStatuses.splice(0);
-      angular.copy(_statuses, _userStatuses);
+  service.getStatuses = _getStatuses;
+  service.addStatus = _addStatus;
+  service.getUsers = _getUsers;
+  
+  init();
+  function init(){
+    var _getRequest = {
+      method: "GET",
+      url: SERVER_URL
+    };
+
+
+  $http(_getRequest).then(function(res){
+    _statuses = res.data;
+    _updateUsers();
+  });
+
+  };
+  function _addStatus(newStatus) {
+    if (!_.isEmpty(newStatus.message)) {
+    var  _postRequest = {
+        method: "POST",
+        url: SERVER_URL,
+        data: newStatus,
+      };
+
+      $http(_postRequest).then(function __updateStatuses(res) {
+        if (!!res) {
+          _statuses.push(res.data);
+          _updateUsers();
+        }
+      });
     }
     else {
       alert("Please type in message");
     }
+
   }
 
-  service.resetStatuses = function(){
-    _statuses.splice(0);
+  function _getUsers(){
+    return _users;
   }
 
-  service.getStatuses = function () {
-    return _statuses;
+  function _getStatuses () {
+    return _userStatuses;
   }
 
-  service.addStatuses = function(newStatus){
+  function _addStatuses(newStatus){
     _statuses.push(newStatus);
+  }
+
+  function _updateUsers(){
+    _userStatuses.splice(0);
+    angular.copy(_statuses, _userStatuses);
+
+    _users.splice(0);
+    var userNames = _.uniq(_.map(_statuses, 'user'));
+
+    _.each(userNames, function getUserStatus(userName){
+      var newUser = {
+        name: userName
+      }
+      var userStatus = _.find(_statuses, function(status){
+        return status.user === userName;
+      })
+      newUser.date = userStatus.date;
+      newUser.message = userStatus.message;
+      _users.push(newUser);
+    });
   }
 });
 app.controller('MainController', function(UserService){
@@ -108,10 +157,6 @@ app.controller('UserController', function(UserService, StatusService) {
 
 app.controller('StatusController', function(UserService, StatusService){
   var vm = this;
-  vm.statuses = StatusService.getStatuses();
-
-  vm.deleteStatus = function() {
-    vm.statuses.splice(0);
-
-  }
+  vm.statuses = StatusService.getUsers();
+  console.log(vm.statuses);
 });

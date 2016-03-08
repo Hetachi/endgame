@@ -9,7 +9,7 @@
 <body ng-controller="MainController as mainCtrl">
   <nav class="navbar navbar-default">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">MyPAge</a>
+        <a class="navbar-brand" href="#">Welcome to BootBook</a>
         <a class="navbar-brand" href="#" ng-if="mainCtrl.hasUser()"> Logged in as: {{mainCtrl.getUsername()}}</a>
         <a class="navbar-brand" href="#" ng-if="mainCtrl.hasUser()" ng-click="mainCtrl.removeUser()">Logout</a>
     </div>
@@ -32,13 +32,12 @@
       </div>
       <hr/>
       <div class="" ng-controller="StatusController as statusCtrl">
-        <div ng-repeat="x in statusCtrl.statuses">
-            <h2>{{x.user}}:</h2>
-            <h3>{{x.id}}</h2>
-            <span>{{x.date | date:'medium'}}</span>
-            <textarea class="form-control" type="text">{{x.message}}</textarea>
+        <div ng-repeat="post in statusCtrl.user">
+            <h2>{{post.name}}:
+            <span>{{post.date | date:'medium'}}</span>
+            <textarea class="form-control" type="text">{{post.message}}</textarea>
           </div>
-        <button class="btn btn-default" type="button" ng-click="statusCtrl.deleteStatus()" name="Delete all">Delete all</button>
+
       </div>
 
     </div>
