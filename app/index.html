@@ -31,11 +31,11 @@
         </form>
       </div>
       <hr/>
-      <div class="" ng-controller="StatusController as statusCtrl">
-        <div ng-repeat="post in statusCtrl.user">
-            <h2>{{post.name}}:
-            <span>{{post.date | date:'medium'}}</span>
-            <textarea class="form-control" type="text">{{post.message}}</textarea>
+      <div class=""  ng-controller="StatusController as statusCtrl">
+        <div ng-if="!!post.name" ng-repeat="post in statusCtrl.users | orderBy: '-date' track by post.name">
+            <h2>{{post.name}}:</h2>
+            <div>{{post.date | date:'medium'}}</div>
+            <div class="" type="text">{{post.message}}</div>
           </div>
 
       </div>

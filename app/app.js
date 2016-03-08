@@ -49,7 +49,7 @@ app.controller('LoginController', function(UserService){
     UserService.setUser(vm.username);
   }
 })
-app.service('StatusService', function($http){
+app.service('StatusService', function($http, $timeout){
   var service = this;
   var SERVER_URL = 'http://10.0.1.86:8080/statuses';
   var _statuses = [];
@@ -59,21 +59,21 @@ app.service('StatusService', function($http){
   service.getStatuses = _getStatuses;
   service.addStatus = _addStatus;
   service.getUsers = _getUsers;
-  
+
   init();
   function init(){
     var _getRequest = {
       method: "GET",
       url: SERVER_URL
     };
-
-
-  $http(_getRequest).then(function(res){
-    _statuses = res.data;
-    _updateUsers();
-  });
-
+    $http(_getRequest).then(function(res){
+      _statuses = res.data;
+      _updateUsers();
+      $timeout(init,1500);
+    });
   };
+
+
   function _addStatus(newStatus) {
     if (!_.isEmpty(newStatus.message)) {
     var  _postRequest = {
@@ -109,20 +109,24 @@ app.service('StatusService', function($http){
 
   function _updateUsers(){
     _userStatuses.splice(0);
-    angular.copy(_statuses, _userStatuses);
+    var _sortedStatuses = _.sortBy(_statuses,'user')
+    angular.copy(_sortedStatuses.reverse(), _userStatuses);
 
     _users.splice(0);
     var userNames = _.uniq(_.map(_statuses, 'user'));
 
     _.each(userNames, function getUserStatus(userName){
+
       var newUser = {
         name: userName
       }
-      var userStatus = _.find(_statuses, function(status){
+      var userStatus = _.find(_userStatuses, function(status){
         return status.user === userName;
       })
+      if (!!userName && !!userStatus) {
       newUser.date = userStatus.date;
       newUser.message = userStatus.message;
+      }
       _users.push(newUser);
     });
   }
@@ -157,6 +161,6 @@ app.controller('UserController', function(UserService, StatusService) {
 
 app.controller('StatusController', function(UserService, StatusService){
   var vm = this;
-  vm.statuses = StatusService.getUsers();
+  vm.users = StatusService.getUsers();
   console.log(vm.statuses);
 });
