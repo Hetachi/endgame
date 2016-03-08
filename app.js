@@ -1,6 +1,54 @@
 
 var app = angular.module('firstApp', []);
 
+
+app.service('UserService', function(){
+  var service = this;
+
+  var USERNAME_KEY = 'username';
+  var _user = {
+    username: localStorage.getItem(USERNAME_KEY),
+
+    //TODO: Implement password support in the future
+    password: undefined
+  }
+
+  service.setUser = _setUser;
+  service.removeUser = _removeUser;
+  service.getUsername = _getUsername;
+  service.hasUser = _hasUser;
+
+  function _removeUser() {
+    _setUser(null);
+  }
+     function _setUser(username) {
+       _user.username = username;
+       if (_.isNull(username)){
+         localStorage.removeItem(USERNAME_KEY, username);
+       }else {
+       localStorage.setItem(USERNAME_KEY, username);
+     }
+    }
+       function _getUsername() {
+        return _user.username;
+      }
+
+        function _hasUser() {
+          // FIXME: 0 passes trough
+          return !_.isNull(_getUsername());
+        }
+          function _getUsername() {
+            return _user.username;
+          }
+});
+app.controller('LoginController', function(UserService){
+  var vm = this;
+  vm.username = '';
+  vm.login= _login;
+  function _login(){
+    UserService.setUser(vm.username);
+  }
+})
 app.service('StatusService', function(){
   var service = this;
   service.statuses = [];
@@ -10,12 +58,11 @@ app.service('StatusService', function(){
   service.addStatus = function(newStatus) {
     if (!_.isEmpty(newStatus.user) && !_.isEmpty(newStatus.message)) {
       _statuses.push(newStatus);
-
       _userStatuses.splice(0);
       angular.copy(_statuses, _userStatuses);
     }
     else {
-      alert("Please define user and message");
+      alert("Please type in message");
     }
   }
 
@@ -31,31 +78,35 @@ app.service('StatusService', function(){
     _statuses.push(newStatus);
   }
 });
-  service.dbSave = function(infoToSave) {
-    var db = this;
-    
-  }
-app.controller('UserController', function(StatusService) {
+app.controller('MainController', function(UserService){
   var vm = this;
-  vm.date = new Date();
+  vm.hasUser = UserService.hasUser;
+  vm.getUsername = UserService.getUsername;
+  vm.removeUser = UserService.removeUser;
+});
+app.controller('UserController', function(UserService, StatusService) {
+  var vm = this;
+  _resetForm();
+    vm.setStatus = function (){
+      var _newStatus = {
+        date : vm.date,
+        user: UserService.getUsername(),
+        message: vm.message
+      };
 
-  vm.setStatus = function (){
-    var _newStatus = {
-      date : vm.date,
-      user: vm.user,
-      message: vm.message
+      StatusService.addStatus(_newStatus);
+      _resetForm()
     };
+      function _resetForm() {
+        vm.date = new Date();
+        vm.message = '';
+      }
+;
 
-    StatusService.addStatus(_newStatus);
-    function _resetForm() {
-      vm.date = '';
-      vm.message = '';
-    }
-    _resetForm();
-  };
+
 });
 
-app.controller('StatusController', function(StatusService){
+app.controller('StatusController', function(UserService, StatusService){
   var vm = this;
   vm.statuses = StatusService.getStatuses();
 
