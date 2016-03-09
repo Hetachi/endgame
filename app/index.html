@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html ng-app="firstApp">
 <head>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" media="screen" title="no title" charset="utf-8">
-  <script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
-  <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-  <script type="text/javascript" src="app.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
 </head>
 <body ng-controller="MainController as mainCtrl">
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Welcome to BootBook</a>
-        <a class="navbar-brand" href="#" ng-if="mainCtrl.hasUser()"> Logged in as: {{mainCtrl.getUsername()}}</a>
-        <a class="navbar-brand" href="#" ng-if="mainCtrl.hasUser()" ng-click="mainCtrl.removeUser()">Logout</a>
-    </div>
-  </nav>
+  <md-toolbar>
+    <md-h1>
+        <a  href="#">Welcome to BootBook</a>
+        <a  href="#" ng-if="mainCtrl.hasUser()"> Logged in as: {{mainCtrl.getUsername()}}</a>
+        <md-button ng-if="mainCtrl.hasUser()" ng-click="mainCtrl.removeUser()">Logout</md-button>
+    </md-h1>
+  </md-toolbar>
   <div id="guest-space" class="container" ng-if="!mainCtrl.hasUser()" ng-controller="LoginController as loginCtrl">
-      <p>Login first!</p>
+      <md-h1>Login first!</md-h1>
       <form class="form-group" ng-submit="loginCtrl.login()">
           <input class="form-control" type="text" require autofocuse ng-model="loginCtrl.username" placeholder="Username"></input>
           <input class="form-control" type="password" placeholder="Password"></input>
-          <button class="btn btn-default" type="submit">Login</button>
+          <md-button  type="submit">Login</md-button>
       </form>
   </div>
 
@@ -32,14 +29,12 @@
       </div>
       <hr/>
       <div class=""  ng-controller="StatusController as statusCtrl">
-        <div ng-if="!!post.name" ng-repeat="post in statusCtrl.users | orderBy: '-date' track by post.name">
-            <h2>{{post.name}}:</h2>
-            <div>{{post.date | date:'medium'}}</div>
-            <div class="" type="text">{{post.message}}</div>
+        <div ng-repeat="user in statusCtrl.users | orderUsers:'statusList' track by user.name">
+            <h2>{{user.name}}:</h2>
+            <div>{{user.date | date:'medium'}}</div>
+            <div class="" type="text">{{user.message}}</div>
           </div>
-
       </div>
-
     </div>
   </div>
 </body>
