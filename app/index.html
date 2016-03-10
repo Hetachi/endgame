@@ -1,41 +1,10 @@
 <!DOCTYPE html>
 <html ng-app="firstApp">
 <head>
-  <script type="text/javascript" src="bundle.js"></script>
+  <meta charset="utf-8"></meta>
 </head>
-<body ng-controller="MainController as mainCtrl">
-  <md-toolbar>
-    <md-h1>
-        <a  href="#">Welcome to BootBook</a>
-        <a  href="#" ng-if="mainCtrl.hasUser()"> Logged in as: {{mainCtrl.getUsername()}}</a>
-        <md-button ng-if="mainCtrl.hasUser()" ng-click="mainCtrl.removeUser()">Logout</md-button>
-    </md-h1>
-  </md-toolbar>
-  <div id="guest-space" class="container" ng-if="!mainCtrl.hasUser()" ng-controller="LoginController as loginCtrl">
-      <md-h1>Login first!</md-h1>
-      <form class="form-group" ng-submit="loginCtrl.login()">
-          <input class="form-control" type="text" require autofocuse ng-model="loginCtrl.username" placeholder="Username"></input>
-          <input class="form-control" type="password" placeholder="Password"></input>
-          <md-button  type="submit">Login</md-button>
-      </form>
-  </div>
-
-  <div id="user-space" class="container" ng-if="mainCtrl.hasUser()"  ng-controller="UserController as userCtrl">
-      <div class="form-group">
-        <form name="statusForm"ng-submit="userCtrl.setStatus()">
-          <input class="form-control" type="text" ng-model="userCtrl.message" placeholder="E.g. Hello World"></input>
-          <button class="btn btn-default" type="submit">Update status</button>
-        </form>
-      </div>
-      <hr/>
-      <div class=""  ng-controller="StatusController as statusCtrl">
-        <div ng-repeat="user in statusCtrl.users | orderUsers:'statusList' track by user.name">
-            <h2>{{user.name}}:</h2>
-            <div>{{user.date | date:'medium'}}</div>
-            <div class="" type="text">{{user.message}}</div>
-          </div>
-      </div>
-    </div>
-  </div>
+<body>
+<ui-view></ui-view>
+<script src="bundle.js"></script>
 </body>
 </html>

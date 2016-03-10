@@ -2,3 +2,13 @@ body {
   background-color: white;
   font-family: sans-serif;
 }
+.recent {
+  background: yellow;
+}
+.recent-transition {
+  transition: bakcground 2s;
+
+}
+.user-link {
+  cursor: pointer;
+}

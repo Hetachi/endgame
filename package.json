@@ -25,7 +25,9 @@
     "cors": "^2.7.1",
     "css-loader": "^0.23.1",
     "grunt": "^0.4.5",
-    "style-loader": "^0.13.0"
+    "html-loader": "^0.4.3",
+    "style-loader": "^0.13.0",
+    "ui-router": "^1.0.0-alpha0"
   },
   "devDependencies": {}
 }

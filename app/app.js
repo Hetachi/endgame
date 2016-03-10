@@ -1,15 +1,55 @@
+// Styles
 import 'angular-material/angular-material.css';
-require('./app.css');
+import './app.css';
+// libs
 import 'lodash';
 import 'angular';
+// Modules
 import angularMaterial from 'angular-material';
-
+import uiRouter from 'ui-router';
 
 
 var app = angular.module('firstApp', [
+  uiRouter,
   angularMaterial
 ]);
+app.config(function($stateProvider, STATES){
+  $stateProvider
+  .state(STATES.MAIN,{
+    abstract: true,
+    url:'',
+    template: require ('./main.html'),
+    controller: 'MainController',
+    controllerAs: 'mainCtrl',
+  })
+  .state(STATES.LOGIN,{
+    template: require ('./login.html'),
+    controller: 'LoginController',
+    controllerAs: 'loginCtrl',
+  })
+  .state(STATES.USER, {
+    template: require ('./user.html'),
+    controller: 'UserController',
+    controllerAs: 'userCtrl',
+  });
 
+});
+app.constant('STATES',{
+  MAIN: 'main',
+  LOGIN: 'main.login',
+  USER: 'main.user'
+});
+app.constant('TIMEOUTS', {
+  COMET: 1000,
+});
+app.run(function($state, UserService, STATES){
+  if(UserService.hasUser()){
+    $state.go(STATES.USER);
+  }
+  else {
+    $state.go(STATES.LOGIN);
+  }
+})
 app.service('UserService', function () {
     var service = this;
 
@@ -31,13 +71,15 @@ app.service('UserService', function () {
 
         if (_.isNull(username)) {
             localStorage.removeItem(USERNAME_KEY);
+            return false;
         } else {
             localStorage.setItem(USERNAME_KEY, username);
+            return true;
         }
     }
 
     function _removeUser() {
-        _setUser(null);
+      return !_setUser(null);
     }
 
     function _hasUser() {
@@ -49,7 +91,7 @@ app.service('UserService', function () {
     }
 });
 
-app.service('StatusService', function ($http, $timeout) {
+app.service('StatusService', function ($http, $timeout, TIMEOUTS) {
     var service = this;
 
     var SERVER_URL = 'http://10.0.1.86:8080/statuses';
@@ -59,6 +101,7 @@ app.service('StatusService', function ($http, $timeout) {
 
     service.addStatus = _addStatus;
     service.getUsers = _getUsers;
+    service.getStatuses = _getStatuses;
 
     init();
 
@@ -73,7 +116,9 @@ app.service('StatusService', function ($http, $timeout) {
 
             _updateUsers();
 
-            $timeout(init, 4000);
+
+        }).finally(function(){
+          $timeout(init, TIMEOUTS.COMET);
         });
     }
 
@@ -122,17 +167,34 @@ app.service('StatusService', function ($http, $timeout) {
             }
         });
     }
+
+    function _getStatuses(username) {
+      if (_.isEmpty(username)) {
+        return [];
+      }else {
+        var filteredStatuses = _.filter(_statuses, function(status){
+          return status.user === username;
+
+
+        });
+      }
+                return _.sortBy(filteredStatuses, 'date').reverse();
+    }
 });
 
-app.controller('MainController', function (UserService) {
+app.controller('MainController', function (UserService, $state, STATES) {
     var vm = this;
 
     vm.hasUser = UserService.hasUser;
     vm.getUsername = UserService.getUsername;
-    vm.removeUser = UserService.removeUser;
+    vm.logOut = function (){
+      if(UserService.removeUser){
+        $state.go(STATES.LOGIN);
+      }
+    }
 });
 
-app.controller('LoginController', function (UserService) {
+app.controller('LoginController', function (UserService, $state) {
     var vm = this;
 
     vm.username = '';
@@ -140,7 +202,10 @@ app.controller('LoginController', function (UserService) {
     vm.login = _login;
 
     function _login() {
-        UserService.setUser(vm.username);
+
+      if (UserService.setUser(vm.username)) {
+        $state.go(STATE.USER);
+      };
     }
 });
 
@@ -174,17 +239,48 @@ app.controller('UserController', function (UserService, StatusService) {
     }
 });
 
-app.controller('StatusController', function (StatusService) {
+app.controller('StatusController', function (StatusService, TIMEOUTS, $mdDialog) {
     var vm = this;
-
     vm.users = StatusService.getUsers();
+    vm.showHistory = function(user) {
+      $mdDialog.show({
+        template: require('./history.html'),
+        controller: 'HistoryController',
+        controllerAs: 'historyCtrl',
+        clickOutsideToClose: true,
+        locals: {
+          'User': user
+        }
+      })
+    };
+    vm.isRecent = function(user) {
+      var now = new Date();
+      var userDate = new Date(user.date);
+      return (now - userDate) < TIMEOUTS.COMET * 2;
+    }
 });
+
+app.controller('HistoryController', function(StatusService, User, $mdDialog){
+  var vm = this;
+  vm.username = User.name;
+  vm.refresh = _refresh;
+  _refresh();
+  function _refresh(){
+    vm.statuses = StatusService.getStatuses(User.name);
+  }
+  vm.close = function(){
+    $mdDialog.hide();
+  }
+});
+
 app.filter('orderUsers', function(){
 var lastLists = {};
-
+  var STATUS_LIMIT = 6;
   return function oderUsersFilter(userMap, mapName){
       var userList = _.map(userMap, generateNewUser);
-      var newList = _.sortBy(userList, 'date').reverse();
+      var sortedList = _.sortBy(userList, 'date').reverse();
+
+      var newList = _.slice(sortedList, 0, STATUS_LIMIT);
 
     if (!!mapName) {
       if (JSON.stringify(lastLists[mapName]) !== JSON.stringify(newList)) {
@@ -206,4 +302,4 @@ var lastLists = {};
     }
   }
   return lastLists[mapName];
-})
+});

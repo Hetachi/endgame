@@ -1,0 +1,29 @@
+    <article ng-controller="StatusController as statusCtrl">
+        <md-content id="user-space">
+            <form name="statusForm"
+                  ng-submit="userCtrl.setStatus()">
+                <div class="form-group">
+                  <input class="form-control"
+                         type="text"
+                         required
+                         ng-model="userCtrl.message"
+                         placeholder="E.g. 'HELLO FRIENDS!'"/>
+                </div>
+                <md-button type="submit">Set status</md-button>
+            </form>
+            <hr/>
+            <article ng-controller="StatusController as statusCtrl">
+                <section ng-if="!!user.name"
+                         class = "recent-transition"
+                         ng-class="{recent:statusCtrl.isRecent(user)}"
+                         ng-repeat="user in statusCtrl.users | orderUsers:'statusList' track by user.name">
+                    <header>
+                        <h3 class="user-link" ng-click="statusCtrl.showHistory(user)">{{user.name}}</h3>
+                        <span>{{user.date | date}}</span>
+                    </header>
+                    <div>{{user.message}}</div>
+                    <hr>
+                </section>
+
+        </md-content>
+    </article>
